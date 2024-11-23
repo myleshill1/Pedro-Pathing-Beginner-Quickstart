@@ -226,8 +226,6 @@ public class Auto_Bucket_Side extends OpMode {
         autonomousActionUpdate();
         clawUpdate();
 
-        //Huskylens Setup
-
         // Feedback to Driver Hub
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
@@ -250,9 +248,6 @@ public class Auto_Bucket_Side extends OpMode {
 
         claw = new ClawSubsystem(hardwareMap);
 
-
-        claw.closeClaws();
-        claw.startClaw();
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
