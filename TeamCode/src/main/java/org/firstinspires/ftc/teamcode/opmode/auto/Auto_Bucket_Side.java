@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.example;
 
 
-import com.qualcomm.hardware.dfrobot.HuskyLens;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -36,7 +36,7 @@ public class Auto_Bucket_Side extends OpMode {
     private int pathState, actionState, clawState;
     private String navigation;
     public ClawSubsystem claw;
-    private HuskyLens huskyLens;
+
 
     /** Create and Define Poses + Paths
      * Poses are built with three constructors: x, y, and heading (in Radians).
