@@ -9,6 +9,8 @@ package org.firstinspires.ftc.teamcode.config;
 public class RobotConstants {
 
     /** Variables are positions for the claw servos. **/
+
+    //------------------------------Claw Positions------------------------------//
     public static double closedL = 0.32; //33
     public static double closedR = 0.38; //37
     public static double openL = 0.47;//.42
@@ -16,4 +18,21 @@ public class RobotConstants {
     public static double startClaw = 0.174;
     public static double groundClaw = 0.835; //.815
     public static double scoringClaw = 0.25;
+
+    //------------------------------Main Pivot Positions------------------------------//
+    public static double bucketPivotpos = 1420.0;
+
+    public static double samplePivotpos = 130.0;
+
+    //------------------------------Slides Positions------------------------------//
+    public static double bucketSlidespos = 3300.0;
+    public static double sampleSlidespos = 1040.0;
+
+    //------------------------------Pivot Arm Positions------------------------------//
+
+
+
+
+
+
 }
