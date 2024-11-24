@@ -44,9 +44,22 @@ public class Auto_Bucket_Side extends OpMode {
      * (For Centerstage, this would be blue far side/red human player station.)
      * Even though Pedro uses a different coordinate system than RR, you can convert any roadrunner pose by adding +72 both the x and y. **/
     //Start Pose
-    private Pose startPose = new Pose(8.5, 84, 0);
+    private Point startPose = new Point(9, 96, Point.CARTESIAN);
+    private Point scoringBucket = new Point(14, 129, Point.CARTESIAN);
+    int scoringBucketHeading = 135;
+
+    private Point sample1 = new Point(36.500, 121.500, Point.CARTESIAN);
+
+    private Point sample2 = new Point(36.570, 131.890, Point.CARTESIAN);
+
+    private Point sample3 = new Point(45.562, 132.969, Point.CARTESIAN);
+
+            /*
+    private Pose startPose = new Pose(9, 96, 90);
     //Spike mark locations
-    private Pose LeftSpikeMark = new Pose(52, 104, Math.toRadians(270));
+    private Pose scoringBucket = new Pose(14, 129, Math.toRadians(135));
+
+    private Point startToBucketControlPoint = new Point(23.5, 119, Point.CARTESIAN);
     private Pose MiddleSpikeMark = new Pose(59, 94.5, Math.toRadians(270));
     private Pose RightSpikeMark = new Pose(52, 82.75, Math.toRadians(270));
     //Backdrop zone locations
@@ -64,38 +77,11 @@ public class Auto_Bucket_Side extends OpMode {
     private Pose BottomTruss = new Pose(28, 36, Math.toRadians(270));
     private Pose Stack = new Pose(46, 11.5, Math.toRadians(270));
     private PathChain cycleStackTo, cycleStackBack, cycleStackToBezier;
-
-    /** Generate Spike Mark and Backdrop Paths based off of the team element location **/
-    public void setBackdropGoalPose() {
-        switch (navigation) {
-            default:
-            case "left":
-                spikeMarkGoalPose = new Pose(LeftSpikeMark.getX(), LeftSpikeMark.getY(), Math.toRadians(270));
-                initialBackdropGoalPose = new Pose(LeftBackdrop.getX(), LeftBackdrop.getY(), Math.toRadians(270));
-                firstCycleBackdropGoalPose = new Pose(WhiteBackdrop.getX(), WhiteBackdrop.getY(), Math.toRadians(270));
-                scoreSpikeMarkChosen = new Path(new BezierCurve(new Point(startPose), new Point(8.5,80.5,Point.CARTESIAN), new Point(48,135,Point.CARTESIAN), new Point(LeftSpikeMark)));
-                break;
-            case "middle":
-                spikeMarkGoalPose = new Pose(MiddleSpikeMark.getX(), MiddleSpikeMark.getY()+3, Math.toRadians(270));
-                initialBackdropGoalPose = new Pose(MiddleBackdrop.getX(), MiddleBackdrop.getY(),Math.toRadians(270));
-                firstCycleBackdropGoalPose = new Pose(MiddleBackdrop.getX(), MiddleBackdrop.getY(), Math.toRadians(270));
-                scoreSpikeMarkChosen = new Path(new BezierCurve(new Point(startPose), new Point(8.5,12+72+5,Point.CARTESIAN), new Point(-30+72+15,22+67.5+20+5,Point.CARTESIAN), new Point(MiddleSpikeMark)));
-                break;
-            case "right":
-                spikeMarkGoalPose = new Pose(RightSpikeMark.getX(), RightSpikeMark.getY(), Math.toRadians(270));
-                initialBackdropGoalPose = new Pose(RightBackdrop.getX(), RightBackdrop.getY(), Math.toRadians(270));
-                firstCycleBackdropGoalPose = new Pose(RightBackdrop.getX(), RightBackdrop.getY(), Math.toRadians(270));
-                scoreSpikeMarkChosen = new Path(new BezierCurve(new Point(startPose), new Point(8.5,12+72+5,Point.CARTESIAN), new Point(-36+72+16,80+17+4,Point.CARTESIAN), new Point(RightSpikeMark)));
-                break;
-        }
-    }
+    */
 
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
     public void buildPaths() {
-        scoreSpikeMark = scoreSpikeMarkChosen;
-        scoreSpikeMark.setLinearHeadingInterpolation(startPose.getHeading(), spikeMarkGoalPose.getHeading());
-        scoreSpikeMark.setPathEndTimeoutConstraint(0);
 
         /** There are two major types of paths components: BezierCurves and BezierLines.
          *    * BezierCurves are curved, and require > 3 points. There are the start and end points, and the control points.
@@ -103,40 +89,91 @@ public class Auto_Bucket_Side extends OpMode {
          *    - A good visualizer for this is [this](https://www.desmos.com/calculator/3so1zx0hcd).
          *    * BezierLines are straight, and require 2 points. There are the start and end points. **/
 
-        initialScoreOnBackdrop = new Path(new BezierLine(new Point(spikeMarkGoalPose), new Point(initialBackdropGoalPose)));
-        initialScoreOnBackdrop.setLinearHeadingInterpolation(spikeMarkGoalPose.getHeading(), initialBackdropGoalPose.getHeading());
-        initialScoreOnBackdrop.setPathEndTimeoutConstraint(0);
-
         /** This is a path chain, defined on line 66
          * It, well, chains multiple paths together. Here we use a constant heading from the board to the stack.
          * On line 97, we set the Linear Interpolation,
          * which means that Pedro will slowly change the heading of the robot from the startHeading to the endHeading over the course of the entire path */
-
-        cycleStackTo = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(initialBackdropGoalPose), new Point(TopTruss)))
-                .setConstantHeadingInterpolation(firstCycleBackdropGoalPose.getHeading())
-                .addPath(new BezierLine(new Point(TopTruss), new Point(BottomTruss)))
-                .setConstantHeadingInterpolation(firstCycleBackdropGoalPose.getHeading())
-                .addPath(new BezierCurve(new Point(BottomTruss), new Point(12+13+1, 12, Point.CARTESIAN), new Point(31+12+1,36,Point.CARTESIAN), new Point(Stack)))
-                .setConstantHeadingInterpolation(firstCycleBackdropGoalPose.getHeading())
+        startToBucket = follower.pathbuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(startPose),
+                                new Point(23.500, 119.000, Point.CARTESIAN), //control point
+                                new Point(scoringBucket)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(scoringBucketHeading)) // COULD BE cosntantlinearheading instead of linear not sure if it will work r not
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        cycleStackBack = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(Stack), new Point(BottomTruss)))
-                .setConstantHeadingInterpolation(WhiteBackdrop.getHeading())
-                .addPath(new BezierLine(new Point(BottomTruss), new Point(TopTruss)))
-                .setConstantHeadingInterpolation(WhiteBackdrop.getHeading())
-                .addPath(new BezierLine(new Point(TopTruss), new Point(WhiteBackdrop)))
-                .setConstantHeadingInterpolation(WhiteBackdrop.getHeading())
+        bucketToSample1 = follower.pathbuilder()
+                .addPath(
+                        // Line 2
+                        new BezierLine(
+                                new Point(scoringBucket),
+                                new Point(sample1)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(scoringBucketHeading), Math.toRadians(0))
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        cycleStackToBezier = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(initialBackdropGoalPose), new Point(30+14,91.6, Point.CARTESIAN), new Point(13+14, 130.8, Point.CARTESIAN), new Point(BottomTruss)))
-                .setConstantHeadingInterpolation(WhiteBackdrop.getHeading())
-                .addPath(new BezierCurve(new Point(BottomTruss), new Point(20.5+14,10, Point.CARTESIAN), new Point(42+14,35, Point.CARTESIAN), new Point(Stack)))
-                .setConstantHeadingInterpolation(WhiteBackdrop.getHeading())
+        sample1toBucket = follower.pathbuilder()
+                .addPath(
+                        // Line 3
+                        new BezierLine(
+                                new Point(sample1),
+                                new Point(scoringBucket)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(scoringBucketHeading))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+
+        bucketToSample2 = follower.pathbuilder()
+                .addPath(
+                        // Line 4
+                        new BezierLine(
+                                new Point(scoringBucket),
+                                new Point(sample2)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(scoringBucketHeading), Math.toRadians(0))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+
+        sample2toBucket = follower.pathbuilder()
+                .addPath(
+                        // Line 5
+                        new BezierLine(
+                                new Point(sample2),
+                                new Point(scoringBucket)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(scoringBucketHeading))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+
+        bucketToSample3 = follower.pathbuilder()
+                .addPath(
+                        // Line 6
+                        new BezierLine(
+                                new Point(scoringBucket),
+                                new Point(sample3)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(scoringBucketHeading), Math.toRadians(90))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+
+        sample3toBucket = follower.pathbuilder()
+                .addPath(
+                        // Line 7
+                        new BezierLine(
+                                new Point(sample3),
+                                new Point(scoringBucket)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135));
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
