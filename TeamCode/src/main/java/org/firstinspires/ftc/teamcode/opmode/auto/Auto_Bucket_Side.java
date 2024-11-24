@@ -44,15 +44,26 @@ public class Auto_Bucket_Side extends OpMode {
      * (For Centerstage, this would be blue far side/red human player station.)
      * Even though Pedro uses a different coordinate system than RR, you can convert any roadrunner pose by adding +72 both the x and y. **/
     //Start Pose
-    private Point startPose = new Point(9, 96, Point.CARTESIAN);
-    private Point scoringBucket = new Point(14, 129, Point.CARTESIAN);
+    private Pose startPose = new Pose(9, 96, Point.CARTESIAN);
+    private Pose scoringBucket = new Pose(14, 129, Point.CARTESIAN);
     int scoringBucketHeading = 135;
 
-    private Point sample1 = new Point(36.500, 121.500, Point.CARTESIAN);
+    private Pose sample1 = new Pose(36.500, 121.500, Point.CARTESIAN);
 
-    private Point sample2 = new Point(36.570, 131.890, Point.CARTESIAN);
+    private Pose sample2 = new Pose(36.570, 131.890, Point.CARTESIAN);
 
-    private Point sample3 = new Point(45.562, 132.969, Point.CARTESIAN);
+    private Pose sample3 = new Pose(45.562, 132.969, Point.CARTESIAN);
+    private PathChain startToBucket;
+    private PathChain bucketToSample1;
+
+    private PathChain bucketToSample2;
+    private PathChain bucketToSample3;
+
+    private PathChain sample1toBucket;
+    private PathChain sample2toBucket;
+    private PathChain sample3toBucket;
+
+
 
             /*
     private Pose startPose = new Pose(9, 96, 90);
@@ -93,7 +104,7 @@ public class Auto_Bucket_Side extends OpMode {
          * It, well, chains multiple paths together. Here we use a constant heading from the board to the stack.
          * On line 97, we set the Linear Interpolation,
          * which means that Pedro will slowly change the heading of the robot from the startHeading to the endHeading over the course of the entire path */
-        startToBucket = follower.pathbuilder()
+        startToBucket = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Point(startPose),
@@ -105,7 +116,7 @@ public class Auto_Bucket_Side extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        bucketToSample1 = follower.pathbuilder()
+        bucketToSample1 = follower.pathBuilder()
                 .addPath(
                         // Line 2
                         new BezierLine(
@@ -117,7 +128,7 @@ public class Auto_Bucket_Side extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        sample1toBucket = follower.pathbuilder()
+        sample1toBucket = follower.pathBuilder()
                 .addPath(
                         // Line 3
                         new BezierLine(
@@ -129,7 +140,7 @@ public class Auto_Bucket_Side extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        bucketToSample2 = follower.pathbuilder()
+        bucketToSample2 = follower.pathBuilder()
                 .addPath(
                         // Line 4
                         new BezierLine(
@@ -141,7 +152,7 @@ public class Auto_Bucket_Side extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        sample2toBucket = follower.pathbuilder()
+        sample2toBucket = follower.pathBuilder()
                 .addPath(
                         // Line 5
                         new BezierLine(
@@ -153,7 +164,7 @@ public class Auto_Bucket_Side extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        bucketToSample3 = follower.pathbuilder()
+        bucketToSample3 = follower.pathBuilder()
                 .addPath(
                         // Line 6
                         new BezierLine(
@@ -165,7 +176,7 @@ public class Auto_Bucket_Side extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
 
-        sample3toBucket = follower.pathbuilder()
+        sample3toBucket = follower.pathBuilder()
                 .addPath(
                         // Line 7
                         new BezierLine(
@@ -173,7 +184,7 @@ public class Auto_Bucket_Side extends OpMode {
                                 new Point(scoringBucket)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(135));
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(scoringBucketHeading))
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
